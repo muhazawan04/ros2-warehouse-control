@@ -1,0 +1,456 @@
+<?xml version="1.0"?>
+<sdf version="1.8">
+
+    <world name="slam_world">
+
+        <!-- ===================================== -->
+        <!--              PHYSICS                  -->
+        <!-- ===================================== -->
+
+        <physics name="1ms" type="ignored">
+            <max_step_size>0.001</max_step_size>
+            <real_time_factor>1.0</real_time_factor>
+        </physics>
+
+        <plugin
+            filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+
+        <plugin
+            filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+
+        <plugin
+            filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+
+        <!-- LiDAR sensor rendering -->
+        <plugin
+            filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+
+            <render_engine>ogre2</render_engine>
+
+        </plugin>
+
+
+        <!-- ===================================== -->
+        <!--               SUNLIGHT                -->
+        <!-- ===================================== -->
+
+        <light type="directional" name="sun">
+
+            <cast_shadows>true</cast_shadows>
+
+            <pose>0 0 10 0 0 0</pose>
+
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+
+            <attenuation>
+                <range>1000</range>
+                <constant>0.9</constant>
+                <linear>0.01</linear>
+                <quadratic>0.001</quadratic>
+            </attenuation>
+
+            <direction>-0.5 0.1 -0.9</direction>
+
+        </light>
+
+
+        <!-- ===================================== -->
+        <!--              GROUND                   -->
+        <!-- ===================================== -->
+
+        <model name="ground_plane">
+
+            <static>true</static>
+
+            <link name="ground_link">
+
+                <collision name="collision">
+
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>100 100</size>
+                        </plane>
+                    </geometry>
+
+                </collision>
+
+                <visual name="visual">
+
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>100 100</size>
+                        </plane>
+                    </geometry>
+
+                    <material>
+                        <ambient>0.8 0.8 0.8 1</ambient>
+                        <diffuse>0.8 0.8 0.8 1</diffuse>
+                    </material>
+
+                </visual>
+
+            </link>
+
+        </model>
+
+
+        <!-- ===================================== -->
+        <!--            FRONT WALL                 -->
+        <!-- ===================================== -->
+
+        <model name="front_wall">
+
+            <static>true</static>
+
+            <pose>5 0 1 0 0 0</pose>
+
+            <link name="link">
+
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>0.2 10 2</size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>0.2 10 2</size>
+                        </box>
+                    </geometry>
+
+                    <material>
+                        <ambient>0.8 0.8 0.8 1</ambient>
+                        <diffuse>0.8 0.8 0.8 1</diffuse>
+                    </material>
+                </visual>
+
+            </link>
+
+        </model>
+
+
+        <!-- ===================================== -->
+        <!--             BACK WALL                 -->
+        <!-- ===================================== -->
+
+        <model name="back_wall">
+
+            <static>true</static>
+
+            <pose>-5 0 1 0 0 0</pose>
+
+            <link name="link">
+
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>0.2 10 2</size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>0.2 10 2</size>
+                        </box>
+                    </geometry>
+
+                    <material>
+                        <ambient>0.7 0.7 0.7 1</ambient>
+                        <diffuse>0.7 0.7 0.7 1</diffuse>
+                    </material>
+                </visual>
+
+            </link>
+
+        </model>
+
+
+        <!-- ===================================== -->
+        <!--             LEFT WALL                 -->
+        <!-- ===================================== -->
+
+        <model name="left_wall">
+
+            <static>true</static>
+
+            <pose>0 5 1 0 0 0</pose>
+
+            <link name="link">
+
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>10 0.2 2</size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>10 0.2 2</size>
+                        </box>
+                    </geometry>
+
+                    <material>
+                        <ambient>0.6 0.6 0.8 1</ambient>
+                        <diffuse>0.6 0.6 0.8 1</diffuse>
+                    </material>
+                </visual>
+
+            </link>
+
+        </model>
+
+
+        <!-- ===================================== -->
+        <!--             RIGHT WALL                -->
+        <!-- ===================================== -->
+
+        <model name="right_wall">
+
+            <static>true</static>
+
+            <pose>0 -5 1 0 0 0</pose>
+
+            <link name="link">
+
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>10 0.2 2</size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>10 0.2 2</size>
+                        </box>
+                    </geometry>
+
+                    <material>
+                        <ambient>0.6 0.6 0.8 1</ambient>
+                        <diffuse>0.6 0.6 0.8 1</diffuse>
+                    </material>
+                </visual>
+
+            </link>
+
+        </model>
+
+
+        <!-- ===================================== -->
+        <!--          OBSTACLE 1: BOX              -->
+        <!-- ===================================== -->
+
+        <model name="obstacle_box">
+
+            <static>true</static>
+
+            <pose>2 2 0.5 0 0 0</pose>
+
+            <link name="link">
+
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>1 1 1</size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>1 1 1</size>
+                        </box>
+                    </geometry>
+
+                    <material>
+                        <ambient>1 0.5 0 1</ambient>
+                        <diffuse>1 0.5 0 1</diffuse>
+                    </material>
+                </visual>
+
+            </link>
+
+        </model>
+
+
+        <!-- ===================================== -->
+        <!--       OBSTACLE 2: CYLINDER            -->
+        <!-- ===================================== -->
+
+        <model name="obstacle_cylinder">
+
+            <static>true</static>
+
+            <pose>-2 2 0.5 0 0 0</pose>
+
+            <link name="link">
+
+                <collision name="collision">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.5</radius>
+                            <length>1</length>
+                        </cylinder>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <cylinder>
+                            <radius>0.5</radius>
+                            <length>1</length>
+                        </cylinder>
+                    </geometry>
+
+                    <material>
+                        <ambient>0 0.7 0.3 1</ambient>
+                        <diffuse>0 0.7 0.3 1</diffuse>
+                    </material>
+                </visual>
+
+            </link>
+
+        </model>
+
+
+        <!-- ===================================== -->
+        <!--        OBSTACLE 3: LONG BOX           -->
+        <!-- ===================================== -->
+
+        <model name="obstacle_long_box">
+
+            <static>true</static>
+
+            <pose>0 -2 0.5 0 0 0</pose>
+
+            <link name="link">
+
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>2 0.5 1</size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>2 0.5 1</size>
+                        </box>
+                    </geometry>
+
+                    <material>
+                        <ambient>0.8 0.2 0.2 1</ambient>
+                        <diffuse>0.8 0.2 0.2 1</diffuse>
+                    </material>
+                </visual>
+
+            </link>
+
+        </model>
+
+
+        <!-- ===================================== -->
+        <!--             MOBILE ROBOT              -->
+        <!-- ===================================== -->
+
+        <include>
+
+            <uri>model://mobile_robot</uri>
+
+            <name>mobile_robot</name>
+
+            <pose>0 0 0 0 0 0</pose>
+
+        </include>
+
+
+        <!-- ===================================== -->
+        <!--          KEYBOARD CONTROLS            -->
+        <!-- ===================================== -->
+
+        <!-- LEFT ARROW -->
+        <plugin
+            filename="gz-sim-triggered-publisher-system"
+            name="gz::sim::systems::TriggeredPublisher">
+
+            <input type="gz.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777234</match>
+            </input>
+
+            <output type="gz.msgs.Twist" topic="/cmd_vel">
+                linear: {x: 0.0}, angular: {z: 0.5}
+            </output>
+
+        </plugin>
+
+
+        <!-- UP ARROW -->
+        <plugin
+            filename="gz-sim-triggered-publisher-system"
+            name="gz::sim::systems::TriggeredPublisher">
+
+            <input type="gz.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777235</match>
+            </input>
+
+            <output type="gz.msgs.Twist" topic="/cmd_vel">
+                linear: {x: 0.5}, angular: {z: 0.0}
+            </output>
+
+        </plugin>
+
+
+        <!-- RIGHT ARROW -->
+        <plugin
+            filename="gz-sim-triggered-publisher-system"
+            name="gz::sim::systems::TriggeredPublisher">
+
+            <input type="gz.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777236</match>
+            </input>
+
+            <output type="gz.msgs.Twist" topic="/cmd_vel">
+                linear: {x: 0.0}, angular: {z: -0.5}
+            </output>
+
+        </plugin>
+
+
+        <!-- DOWN ARROW -->
+        <plugin
+            filename="gz-sim-triggered-publisher-system"
+            name="gz::sim::systems::TriggeredPublisher">
+
+            <input type="gz.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777237</match>
+            </input>
+
+            <output type="gz.msgs.Twist" topic="/cmd_vel">
+                linear: {x: -0.5}, angular: {z: 0.0}
+            </output>
+
+        </plugin>
+
+    </world>
+
+</sdf>
