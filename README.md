@@ -74,37 +74,100 @@ python main.py
 
 The desktop application requires a valid saved map at `simulation/maps/warehouse_map.yaml` (with the associated image file) for the warehouse display.
 
-### Mapping mode
+## Creating and using a new warehouse map
 
-To build or update the map, stop the saved-map localization session and launch SLAM mode instead:
+The simulation has two separate operating modes: **mapping** (SLAM Toolbox creates an occupancy map) and **delivery** (Nav2 and AMCL navigate using a saved map). Do not run them at the same time.
+
+### 1. Prepare the environment
+
+To change the warehouse layout, edit `simulation/worlds/warehouse_world.sdf` and restart the simulation. The simulated world and occupancy map are separate: changing the Gazebo world does **not** update an existing map automatically.
+
+### 2. Launch mapping mode
+
+Stop any active delivery-mode simulation. From the repository root, run:
 
 ```bash
 cd ~/ros2-warehouse-control
 ros2 launch "$PWD/simulation/launch/warehouse.launch.py"
 ```
 
-Use RViz2 to monitor mapping:
+In a separate terminal, open RViz2:
 
 ```bash
 ros2 run rviz2 rviz2 --ros-args -p use_sim_time:=true
 ```
 
-Set RViz2's fixed frame to `map` and add the `/map` and `/scan` displays. Do not run SLAM Toolbox and AMCL concurrently as competing `map → odom` transform publishers.
+Set **Fixed Frame** to `map`; add a **Map** display for `/map` and a **LaserScan** display for `/scan`. Explore the environment by driving the robot or, if `frontier_exploration_ros2` is installed, by running Nav2 with the mapping parameters and launching the frontier explorer:
 
-To save a map:
+```bash
+# Terminal: Nav2 (while mapping mode is running)
+cd ~/ros2-warehouse-control
+ros2 launch nav2_bringup navigation_launch.py \
+  use_sim_time:=true \
+  params_file:="$PWD/simulation/config/nav2_params.yaml" \
+  autostart:=true
+```
+
+```bash
+# Terminal: frontier explorer (optional)
+cd ~/ros2-warehouse-control
+ros2 launch frontier_exploration_ros2 frontier_explorer.launch.py \
+  params_file:="$PWD/simulation/config/warehouse_exploration.yaml" \
+  use_sim_time:=true \
+  autostart:=true
+```
+
+The explorer requires the external `frontier_exploration_ros2` package to be installed in a sourced ROS 2 workspace. Alternatively, use the navigation or velocity-command controls available in your setup to map the environment manually.
+
+### 3. Save the occupancy map
+
+After sufficient exploration, use a descriptive name so you can retain multiple maps:
 
 ```bash
 cd ~/ros2-warehouse-control
 ros2 run nav2_map_server map_saver_cli \
-  -f "$PWD/simulation/maps/warehouse_map" \
+  -f "$PWD/simulation/maps/warehouse_v2" \
   --ros-args -p use_sim_time:=true
 ```
+
+This saves **both** `warehouse_v2.yaml` (map metadata, resolution and origin) and `warehouse_v2.pgm` (occupancy image) in `simulation/maps/`. Keep these two files together; the `image:` field in the YAML must point to the matching image. Confirm that the map contains the expected boundaries and obstacles before using it for navigation.
+
+### 4. Load the new map in the desktop dashboard
+
+The dashboard can display any valid ROS occupancy-map YAML:
+
+1. Start the application with `python main.py`.
+2. Click **Load Map YAML** above the map.
+3. Choose `simulation/maps/warehouse_v2.yaml`.
+4. Verify the map image appears.
+5. Use **Place Station on Map** to define pickup, delivery and dock locations in free space, set their stopping orientations, and click **Save Stations**.
+
+**Station compatibility:** Station definitions are associated with a map fingerprint derived from the image, resolution and origin. When you load a different map, existing station markers may not appear. Recreate or verify stations against the new map before navigating. The dashboard currently stores the active station set in `config/stations.yaml`; if you need multiple station sets, manage them separately rather than assuming the dashboard automatically switches station files. Commit intentional changes using Git.
+
+### 5. Use the new map for AMCL and Nav2
+
+**Loading a map in the dashboard does not change the map used by AMCL.** In this release, `simulation/launch/delivery.launch.py` explicitly uses `simulation/maps/warehouse_map.yaml`. To make the new map the navigation map, edit the localization launch argument in that file:
+
+```python
+'map': os.path.expanduser(
+    os.path.join(project_dir, 'maps', 'warehouse_v2.yaml')
+),
+```
+
+Stop the mapping session before starting delivery mode:
+
+```bash
+cd ~/ros2-warehouse-control
+ros2 launch "$PWD/simulation/launch/delivery.launch.py"
+```
+
+Then start the dashboard, load **the same** `warehouse_v2.yaml` through **Load Map YAML**, and verify that the robot marker aligns with the map and Nav2 can reach a safe test goal. If the new SLAM map has a different frame origin or initial robot pose, the AMCL `initial_pose` settings in `simulation/config/nav2_delivery_params.yaml` may also need adjustment; do not assume the original docking pose is valid on every newly generated map.
 
 ## Dashboard usage
 
 1. Start the saved-map simulation with AMCL and Nav2.
 2. Launch `python main.py`.
-3. Check the robot's live map marker and localization status.
+3. Use **Load Map YAML** to select the same map that delivery mode loaded into AMCL; check the robot's live marker and localization status.
 4. Add or select pickup, delivery, and dock stations on the map. Position navigation goals in free space next to obstacles, not inside them.
 5. Save station locations so they can be reused on the same map.
 6. Create delivery requests in the queue. Verify navigation functions in simulation before using them with a physical robot.
