@@ -1,50 +1,52 @@
 # ROS 2 Warehouse Robot
 
-A differential-drive robot simulation for mapping and navigating a warehouse using **ROS 2 Jazzy**, **Gazebo Harmonic**, **SLAM Toolbox**, and **Nav2**. The robot uses TurtleBot3-derived visual meshes, a simulated 2D LiDAR, and wheel odometry.
+A simulated differential-drive mobile robot for **autonomous warehouse mapping and navigation**, built with **ROS 2 Jazzy**, **Gazebo Harmonic**, **SLAM Toolbox**, and **Nav2**. The robot uses a 2D LiDAR, wheel odometry, and TurtleBot3-derived visual meshes.
 
-**Release: v0.8.0 — Navigation with live SLAM.** This release adds Nav2 path planning and goal navigation in the warehouse while SLAM Toolbox creates the occupancy map. Autonomous frontier exploration, saved-map localization (AMCL), and the desktop dashboard are not included in this release.
+**Release v0.9.0 — Autonomous exploration and saved-map navigation.** This release supports two distinct operating modes:
+
+- **Mapping:** the robot explores automatically using frontier exploration, with SLAM generating an occupancy grid.
+- **Navigation:** the robot localizes against a saved warehouse map using AMCL and navigates to user-selected goals.
 
 ## Requirements
 
-- Ubuntu 24.04
-- ROS 2 Jazzy
-- Gazebo Harmonic
+- Ubuntu 24.04, ROS 2 Jazzy, Gazebo Harmonic
+- ROS 2 packages for `ros_gz_bridge`, `tf2_ros`, `slam_toolbox`, `rviz2`, Nav2, and the Nav2 map server
+- The `frontier_exploration_ros2` package built in a sourced ROS 2 workspace (required only for autonomous exploration)
 
-Install the ROS packages if needed:
+Install standard packages if needed:
 
 ```bash
 sudo apt update
 sudo apt install ros-jazzy-ros-gz-bridge ros-jazzy-tf2-ros \
   ros-jazzy-slam-toolbox ros-jazzy-rviz2 \
-  ros-jazzy-navigation2 ros-jazzy-nav2-bringup \
-  ros-jazzy-nav2-map-server
+  ros-jazzy-navigation2 ros-jazzy-nav2-bringup ros-jazzy-nav2-map-server
 ```
 
-Source ROS 2 in each terminal if your shell does not already do so:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-```
+For frontier exploration, install [frontier_exploration_ros2](https://github.com/mertgulerx/frontier_exploration_ros2) into your ROS 2 workspace and build it with `colcon`. Source that workspace before starting the explorer.
 
 ## Quick start
 
-Clone the repository and select this release:
+Clone the repository and check out the release:
 
 ```bash
 git clone https://github.com/muhazawan04/ros2-warehouse-control.git
 cd ros2-warehouse-control
-git switch --detach v0.8.0
+git switch --detach v0.9.0
 ```
 
-Start each command in a separate terminal. For terminals 1 and 2, run from the project directory.
+Run commands below from the **project root**. Source ROS 2 and your frontier-exploration workspace in terminals where necessary.
 
-**Terminal 1 — Gazebo, ROS–Gazebo bridge, and SLAM**
+### Mode A — Autonomous mapping
+
+Start each command in a separate terminal:
+
+**1. Gazebo, ROS bridge, and SLAM**
 
 ```bash
 ros2 launch "$PWD/simulation/launch/warehouse.launch.py"
 ```
 
-**Terminal 2 — Nav2 navigation**
+**2. Nav2 navigation**
 
 ```bash
 ros2 launch nav2_bringup navigation_launch.py \
@@ -53,31 +55,23 @@ ros2 launch nav2_bringup navigation_launch.py \
   autostart:=true
 ```
 
-**Terminal 3 — RViz2**
+**3. Autonomous frontier exploration**
+
+```bash
+ros2 launch frontier_exploration_ros2 frontier_explorer.launch.py \
+  params_file:="$PWD/simulation/config/warehouse_exploration.yaml" \
+  use_sim_time:=true autostart:=true
+```
+
+**4. Optional visualization**
 
 ```bash
 ros2 run rviz2 rviz2 --ros-args -p use_sim_time:=true
 ```
 
-In RViz2, set **Fixed Frame** to `map`. Add **Map** (`/map`), **LaserScan** (`/scan`), and optionally **TF**, **RobotModel** (if configured), and Nav2's costmap displays. For the Map display, use **Transient Local** durability if needed.
+In RViz, set **Fixed Frame** to `map` and add **Map** (`/map`), **LaserScan** (`/scan`), and optionally the frontier markers (`/explore/frontiers`). The robot should choose reachable frontiers and gradually expand the map.
 
-## Test navigation
-
-1. Verify that `/map` updates as the robot moves. If the map is mostly unknown, manually explore a nearby open area using `/cmd_vel` before sending a goal.
-2. Check that the navigation action server is available:
-
-   ```bash
-   ros2 action list | grep navigate_to_pose
-   ```
-
-3. In RViz2, choose **Nav2 Goal** (or **2D Goal Pose**, depending on the toolbar configuration) and select a reachable, mapped, obstacle-free location. Drag to set the desired final heading.
-4. Confirm that Nav2 generates a route and the robot drives toward the selected goal. Monitor progress and the resulting map in RViz2.
-
-Do not send velocity commands manually while Nav2 is executing a goal. Avoid placing goals inside shelves, walls, or unexplored space.
-
-## Save an occupancy map
-
-After sufficient exploration, save the map:
+**Save the finished map** while SLAM is running:
 
 ```bash
 ros2 run nav2_map_server map_saver_cli \
@@ -85,40 +79,85 @@ ros2 run nav2_map_server map_saver_cli \
   --ros-args -p use_sim_time:=true
 ```
 
-The saved `warehouse_map.yaml` and `warehouse_map.pgm` can be reused for localization in later releases.
+This writes `warehouse_map.yaml` and `warehouse_map.pgm`. An example map from the tested warehouse is included with this release; regenerate it if the world geometry or map frame changes.
 
-## Project structure
+### Mode B — Localization and navigation on the saved map
+
+**Stop all mapping-mode processes first**, including SLAM Toolbox, frontier exploration, and the mapping Nav2 instance. Running SLAM and AMCL together can cause conflicting `map → odom` transforms.
+
+Start **Gazebo + ROS bridge + map server + AMCL + Nav2**:
+
+```bash
+ros2 launch "$PWD/simulation/launch/delivery.launch.py"
+```
+
+Open RViz separately:
+
+```bash
+ros2 run rviz2 rviz2 --ros-args -p use_sim_time:=true
+```
+
+Set **Fixed Frame** to `map`. Add a **Map** display for `/map` (use **Transient Local** durability if necessary), **LaserScan** for `/scan`, and Nav2's available displays. Send a goal using **Nav2 Goal** to a clear area of the saved map. The robot should navigate using AMCL localization.
+
+The delivery configuration uses the validated **0.50 m position goal tolerance** and **0.25 rad yaw tolerance**. The initial AMCL pose is configured for the warehouse docking start location in the saved map frame.
+
+## Verification
+
+Mapping mode:
+
+```bash
+ros2 topic info /map
+ros2 action list | grep navigate_to_pose
+```
+
+Localization mode:
+
+```bash
+ros2 lifecycle get /amcl
+ros2 lifecycle get /map_server
+ros2 action list | grep navigate_to_pose
+```
+
+Both lifecycle nodes should be `active`, and the navigation action should be available. Confirm navigation by sending a goal in RViz2.
+
+## Project layout
 
 ```text
 simulation/
 ├── config/
 │   ├── bridge.yaml
 │   ├── slam.yaml
-│   └── nav2_params.yaml
+│   ├── nav2_params.yaml
+│   ├── warehouse_exploration.yaml
+│   └── nav2_delivery_params.yaml
 ├── launch/
-│   └── warehouse.launch.py
-├── models/
-│   └── mobile_robot/
-├── worlds/
-│   └── warehouse_world.sdf
-└── maps/
+│   ├── warehouse.launch.py
+│   └── delivery.launch.py
+├── maps/
+│   ├── warehouse_map.yaml
+│   └── warehouse_map.pgm
+├── models/mobile_robot/
+└── worlds/warehouse_world.sdf
 ```
 
 ## Releases
 
 | Version | Capability |
 | --- | --- |
-| v0.1.0 | Gazebo world |
-| v0.2.0 | Mobile robot model |
-| v0.3.0 | Differential-drive control |
-| v0.4.0 | LiDAR sensor |
+| v0.1.0 | Initial Gazebo world |
+| v0.2.0 | Robot model |
+| v0.3.0 | Differential-drive movement |
+| v0.4.0 | LiDAR |
 | v0.5.0 | ROS 2–Gazebo bridge |
 | v0.6.0 | SLAM Toolbox |
 | v0.7.0 | Warehouse environment |
-| **v0.8.0** | **Nav2 navigation with live SLAM** |
+| v0.8.0 | Nav2 navigation with live SLAM |
+| **v0.9.0** | **Autonomous exploration, map saving, AMCL, and saved-map navigation** |
 
-To inspect an earlier release, use `git switch --detach v0.7.0`. Return to the development branch with `git switch main`. Save any local changes before switching.
+To inspect an older version, run `git switch --detach v0.8.0`. To resume development, run `git switch main` (after saving or committing any changes).
 
-## Third-party assets
+## Notes
 
-The robot includes TurtleBot3-derived visual meshes. See the upstream TurtleBot3 project for attribution and licensing details; retain applicable notices when redistributing assets.
+- This version simulates mapping and navigation; package handling and desktop mission controls are introduced later.
+- Navigation goals should be placed in free space with clearance from shelves and walls.
+- The TurtleBot3-derived visual meshes remain third-party assets; retain their applicable licensing and attribution when redistributing.
