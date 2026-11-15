@@ -1,16 +1,11 @@
-<?xml version="1.0"?>
+<?xml version='1.0' encoding='utf-8'?>
 <sdf version="1.8">
-
   <model name="mobile_robot" canonical_link="chassis">
-
     <!-- ====================================== -->
     <!--               CHASSIS                  -->
     <!-- ====================================== -->
-
     <link name="chassis">
-
       <pose>0 0 0.05 0 0 0</pose>
-
       <inertial>
         <mass>103.216875</mass>
         <inertia>
@@ -22,52 +17,37 @@
           <izz>6.26875</izz>
         </inertia>
       </inertial>
-
       <!-- Realistic chassis mesh -->
       <visual name="chassis_visual">
-
         <pose>-0.16 0 0 0 0 0</pose>
-
         <geometry>
           <mesh>
             <uri>model://mobile_robot/meshes/bases/burger_base.stl</uri>
             <scale>0.005 0.005 0.005</scale>
           </mesh>
         </geometry>
-
         <material>
           <ambient>0.3 0.3 0.3 1</ambient>
           <diffuse>0.3 0.3 0.3 1</diffuse>
         </material>
-
       </visual>
-
       <!-- Simplified collision geometry -->
       <collision name="chassis_collision">
-
         <pose>-0.16 0 0.35 0 0 0</pose>
-
         <geometry>
           <box>
             <size>0.7 0.7 0.7</size>
           </box>
         </geometry>
-
       </collision>
-
     </link>
-
-
     <!-- ====================================== -->
     <!--              LEFT WHEEL                -->
     <!-- ====================================== -->
-
     <link name="left_wheel">
-
       <pose relative_to="chassis">
         0 0.4 0.115 -1.5707963 0 0
       </pose>
-
       <inertial>
         <mass>3.5625</mass>
         <inertia>
@@ -79,49 +59,35 @@
           <izz>0.0646875</izz>
         </inertia>
       </inertial>
-
       <visual name="left_wheel_visual">
-
         <pose>0 0 0 1.5707963 0 0</pose>
-
         <geometry>
           <mesh>
             <uri>model://mobile_robot/meshes/wheels/left_tire.stl</uri>
             <scale>0.005 0.005 0.005</scale>
           </mesh>
         </geometry>
-
         <material>
           <ambient>0.2 0.2 0.2 1</ambient>
           <diffuse>0.2 0.2 0.2 1</diffuse>
         </material>
-
       </visual>
-
       <collision name="left_wheel_collision">
-
         <geometry>
           <cylinder>
             <radius>0.165</radius>
             <length>0.09</length>
           </cylinder>
         </geometry>
-
       </collision>
-
     </link>
-
-
     <!-- ====================================== -->
     <!--              RIGHT WHEEL               -->
     <!-- ====================================== -->
-
     <link name="right_wheel">
-
       <pose relative_to="chassis">
         0 -0.4 0.115 -1.5707963 0 0
       </pose>
-
       <inertial>
         <mass>3.5625</mass>
         <inertia>
@@ -133,49 +99,35 @@
           <izz>0.0646875</izz>
         </inertia>
       </inertial>
-
       <visual name="right_wheel_visual">
-
         <pose>0 0 0 1.5707963 0 0</pose>
-
         <geometry>
           <mesh>
             <uri>model://mobile_robot/meshes/wheels/right_tire.stl</uri>
             <scale>0.005 0.005 0.005</scale>
           </mesh>
         </geometry>
-
         <material>
           <ambient>0.2 0.2 0.2 1</ambient>
           <diffuse>0.2 0.2 0.2 1</diffuse>
         </material>
-
       </visual>
-
       <collision name="right_wheel_collision">
-
         <geometry>
           <cylinder>
             <radius>0.165</radius>
             <length>0.09</length>
           </cylinder>
         </geometry>
-
       </collision>
-
     </link>
-
-
     <!-- ====================================== -->
     <!--                CASTER                  -->
     <!-- ====================================== -->
-
     <link name="caster">
-
       <pose relative_to="chassis">
         -0.405 0 -0.02 0 0 0
       </pose>
-
       <inertial>
         <mass>0.625</mass>
         <inertia>
@@ -187,45 +139,32 @@
           <izz>0.03125</izz>
         </inertia>
       </inertial>
-
       <visual name="caster_visual">
-
         <geometry>
           <sphere>
             <radius>0.025</radius>
           </sphere>
         </geometry>
-
         <material>
           <ambient>0.2 0.2 0.2 1</ambient>
           <diffuse>0.2 0.2 0.2 1</diffuse>
         </material>
-
       </visual>
-
       <collision name="caster_collision">
-
         <geometry>
           <sphere>
             <radius>0.025</radius>
           </sphere>
         </geometry>
-
       </collision>
-
     </link>
-
-
     <!-- ====================================== -->
     <!--              LIDAR LINK                -->
     <!-- ====================================== -->
-
     <link name="lidar_link">
-
       <pose relative_to="chassis">
         -0.16 0 0.855 0 0 0
       </pose>
-
       <inertial>
         <mass>14.25</mass>
         <inertia>
@@ -237,39 +176,28 @@
           <izz>0.3125</izz>
         </inertia>
       </inertial>
-
       <!-- Physical LiDAR 3D model -->
       <visual name="lidar_visual">
-
         <geometry>
           <mesh>
             <uri>model://mobile_robot/meshes/sensors/lds.stl</uri>
             <scale>0.005 0.005 0.005</scale>
           </mesh>
         </geometry>
-
         <material>
           <ambient>0.15 0.15 0.15 1</ambient>
           <diffuse>0.15 0.15 0.15 1</diffuse>
         </material>
-
       </visual>
-
-
       <!-- Functional 360-degree LiDAR -->
       <sensor name="lidar" type="gpu_lidar">
-
         <pose>0 0 0.05 0 0 0</pose>
-
         <topic>/scan</topic>
         <gz_frame_id>laser_frame</gz_frame_id>
-
         <update_rate>10</update_rate>
         <always_on>true</always_on>
         <visualize>true</visualize>
-
         <ray>
-
           <scan>
             <horizontal>
               <samples>720</samples>
@@ -278,115 +206,70 @@
               <max_angle>3.14159265</max_angle>
             </horizontal>
           </scan>
-
           <range>
             <min>0.1</min>
             <max>12.0</max>
             <resolution>0.01</resolution>
           </range>
-
         </ray>
-
       </sensor>
-
     </link>
-
-
     <!-- ====================================== -->
     <!--            LEFT WHEEL JOINT            -->
     <!-- ====================================== -->
-
     <joint name="left_wheel_joint" type="revolute">
-
       <parent>chassis</parent>
       <child>left_wheel</child>
-
       <axis>
         <xyz expressed_in="chassis">0 1 0</xyz>
-
         <limit>
           <lower>-1.79769e+308</lower>
           <upper>1.79769e+308</upper>
         </limit>
-
       </axis>
-
     </joint>
-
-
     <!-- ====================================== -->
     <!--            RIGHT WHEEL JOINT           -->
     <!-- ====================================== -->
-
     <joint name="right_wheel_joint" type="revolute">
-
       <parent>chassis</parent>
       <child>right_wheel</child>
-
       <axis>
         <xyz expressed_in="chassis">0 1 0</xyz>
-
         <limit>
           <lower>-1.79769e+308</lower>
           <upper>1.79769e+308</upper>
         </limit>
-
       </axis>
-
     </joint>
-
-
     <!-- ====================================== -->
     <!--              CASTER JOINT              -->
     <!-- ====================================== -->
-
     <joint name="caster_joint" type="ball">
-
       <parent>chassis</parent>
       <child>caster</child>
-
     </joint>
-
-
     <!-- ====================================== -->
     <!--               LIDAR JOINT              -->
     <!-- ====================================== -->
-
     <joint name="lidar_joint" type="fixed">
-
       <parent>chassis</parent>
       <child>lidar_link</child>
-
     </joint>
-
-
     <!-- ====================================== -->
     <!--          DIFFERENTIAL DRIVE            -->
     <!-- ====================================== -->
-
-    <plugin
-      filename="gz-sim-diff-drive-system"
-      name="gz::sim::systems::DiffDrive">
-
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
       <left_joint>left_wheel_joint</left_joint>
       <right_joint>right_wheel_joint</right_joint>
-
       <wheel_separation>0.8</wheel_separation>
       <wheel_radius>0.165</wheel_radius>
-
       <odom_publish_frequency>50</odom_publish_frequency>
-
       <topic>/cmd_vel</topic>
-
       <odom_topic>/model/mobile_robot/odometry</odom_topic>
-
       <frame_id>odom</frame_id>
       <child_frame_id>chassis</child_frame_id>
-
       <tf_topic>/model/mobile_robot/tf</tf_topic>
-
     </plugin>
-
   </model>
-
 </sdf>
