@@ -54,6 +54,10 @@ cd ~/ros2-warehouse-control
 ros2 launch "$PWD/simulation/launch/delivery.launch.py"
 ```
 
+<p align="center">
+  <img src="docs/images/gazebo.png" width="900" alt="Gazebo Warehouse Simulation">
+</p>
+
 If the delivery launch does **not** already start Nav2 navigation servers, start them in a second terminal:
 
 ```bash
@@ -71,6 +75,9 @@ cd ~/ros2-warehouse-control
 source .venv/bin/activate
 python main.py
 ```
+<p align="center">
+  <img src="docs/images/dashboard.png" width="900" alt="Warehouse Control Center Dashboard">
+</p>
 
 The desktop application requires a valid saved map at `simulation/maps/warehouse_map.yaml` (with the associated image file) for the warehouse display.
 
