@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<sdf version="1.8">
+  <model name="mobile_robot" canonical_link="chassis">
+    <link name="chassis">
+      <pose>0 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>103.216875</mass>
+        <inertia>
+          <ixx>6.9125</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>6.621875</iyy>
+          <iyz>0</iyz>
+          <izz>6.26875</izz>
+        </inertia>
+      </inertial>
+      <visual name="chassis_visual">
+        <pose>-0.16 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://mobile_robot/meshes/bases/burger_base.stl</uri>
+            <scale>0.005 0.005 0.005</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.3 0.3 0.3 1</ambient>
+          <diffuse>0.3 0.3 0.3 1</diffuse>
+        </material>
+      </visual>
+      <collision name="chassis_collision">
+        <pose>-0.16 0 0.35 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.7 0.7 0.7</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="left_wheel">
+      <pose relative_to="chassis">
+        0 0.4 0.115 -1.5707963 0 0
+      </pose>
+      <inertial>
+        <mass>3.5625</mass>
+        <inertia>
+          <ixx>0.035</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.035</iyy>
+          <iyz>0</iyz>
+          <izz>0.0646875</izz>
+        </inertia>
+      </inertial>
+      <visual name="left_wheel_visual">
+        <pose>0 0 0 1.5707963 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://mobile_robot/meshes/wheels/left_tire.stl</uri>
+            <scale>0.005 0.005 0.005</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.2 1</ambient>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+        </material>
+      </visual>
+      <collision name="left_wheel_collision">
+        <geometry>
+          <cylinder>
+            <radius>0.165</radius>
+            <length>0.09</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+    <link name="right_wheel">
+      <pose relative_to="chassis">
+        0 -0.4 0.115 -1.5707963 0 0
+      </pose>
+      <inertial>
+        <mass>3.5625</mass>
+        <inertia>
+          <ixx>0.035</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.035</iyy>
+          <iyz>0</iyz>
+          <izz>0.0646875</izz>
+        </inertia>
+      </inertial>
+      <visual name="right_wheel_visual">
+        <pose>0 0 0 1.5707963 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://mobile_robot/meshes/wheels/right_tire.stl</uri>
+            <scale>0.005 0.005 0.005</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.2 1</ambient>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+        </material>
+      </visual>
+      <collision name="right_wheel_collision">
+        <geometry>
+          <cylinder>
+            <radius>0.165</radius>
+            <length>0.09</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+    <link name="caster">
+      <pose relative_to="chassis">
+        -0.405 0 -0.02 0 0 0
+      </pose>
+      <inertial>
+        <mass>0.625</mass>
+        <inertia>
+          <ixx>0.03125</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.03125</iyy>
+          <iyz>0</iyz>
+          <izz>0.03125</izz>
+        </inertia>
+      </inertial>
+      <visual name="caster_visual">
+        <geometry>
+          <sphere>
+            <radius>0.025</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.2 1</ambient>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+        </material>
+      </visual>
+      <collision name="caster_collision">
+        <geometry>
+          <sphere>
+            <radius>0.025</radius>
+          </sphere>
+        </geometry>
+      </collision>
+    </link>
+    <joint name="left_wheel_joint" type="revolute">
+      <parent>chassis</parent>
+      <child>left_wheel</child>
+      <axis>
+        <xyz expressed_in="chassis">0 1 0</xyz>
+        <limit>
+          <lower>-1.79769e+308</lower>
+          <upper>1.79769e+308</upper>
+        </limit>
+      </axis>
+    </joint>
+    <joint name="right_wheel_joint" type="revolute">
+      <parent>chassis</parent>
+      <child>right_wheel</child>
+      <axis>
+        <xyz expressed_in="chassis">0 1 0</xyz>
+        <limit>
+          <lower>-1.79769e+308</lower>
+          <upper>1.79769e+308</upper>
+        </limit>
+      </axis>
+    </joint>
+    <joint name="caster_joint" type="ball">
+      <parent>chassis</parent>
+      <child>caster</child>
+    </joint>
+  </model>
+</sdf>
