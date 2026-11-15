@@ -1,0 +1,48 @@
+map_id: c9ad17e956669604
+map_yaml: simulation/maps/warehouse_map.yaml
+stations:
+  A1:
+    type: pickup
+    x: 2.6568
+    y: 6.0459
+    yaw: 3.141593
+  A2:
+    type: pickup
+    x: 9.8143
+    y: 6.0685
+    yaw: 0.0
+  A4:
+    type: pickup
+    x: 9.882
+    y: 2.0721
+    yaw: 0.0
+  A3:
+    type: pickup
+    x: 2.5665
+    y: 2.1398
+    yaw: 3.141593
+  B1:
+    type: delivery
+    x: 2.4536
+    y: -1.9017
+    yaw: 3.141593
+  B3:
+    type: delivery
+    x: 2.5665
+    y: -5.8982
+    yaw: 3.141593
+  B2:
+    type: delivery
+    x: 9.8143
+    y: -1.9695
+    yaw: 0.0
+  B4:
+    type: delivery
+    x: 9.8368
+    y: -5.9207
+    yaw: 0.0
+  Home:
+    type: dock
+    x: -0.1203
+    y: -0.0277
+    yaw: 0.0

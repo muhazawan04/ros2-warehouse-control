@@ -1,0 +1,3 @@
+# ROS 2 libraries (rclpy, nav2_msgs, geometry_msgs, etc.) come from ROS 2 Jazzy via apt.
+PySide6
+PyYAML
